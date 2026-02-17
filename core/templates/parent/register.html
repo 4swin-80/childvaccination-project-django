@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Parent Registration</title>
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <style>
+        body {
+            background: linear-gradient(135deg, #eaf4f8, #f6fbff);
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .register-card {
+            background: white;
+            border-radius: 25px;
+            box-shadow: 0 15px 40px rgba(0,119,182,0.15);
+            padding: 40px;
+            animation: fadeInUp 0.8s ease forwards;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity:0; transform: translateY(30px); }
+            to { opacity:1; transform: translateY(0); }
+        }
+
+        .form-control {
+            border-radius: 12px;
+            padding: 12px;
+            transition: 0.3s;
+        }
+
+        .form-control:focus {
+            border-color: #00b4d8;
+            box-shadow: 0 0 10px rgba(0,180,216,0.4);
+        }
+
+        .btn-medical {
+            background: linear-gradient(45deg, #0077b6, #00b4d8);
+            border: none;
+            color: white;
+            padding: 12px;
+            border-radius: 12px;
+            transition: 0.3s;
+        }
+
+        .btn-medical:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,180,216,0.4);
+        }
+
+        .avatar-preview {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid #00b4d8;
+            display: none;
+            margin-bottom: 15px;
+        }
+
+        .strength-bar {
+            display: none;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div class="container d-flex justify-content-center align-items-center"
+     style="min-height: 100vh;">
+
+    <div class="col-md-6">
+
+        <div class="register-card">
+
+            <h3 class="text-center text-primary fw-bold mb-4">
+                🏥 Parent Registration
+            </h3>
+
+            <form method="post" enctype="multipart/form-data"
+                  id="registerForm" novalidate>
+                {% csrf_token %}
+
+                <!-- Username -->
+                <div class="form-floating mb-3">
+                    <input type="text" name="username"
+                           class="form-control"
+                           placeholder="Username" required>
+                    <label>Username</label>
+                </div>
+
+                <!-- Password -->
+                <div class="form-floating mb-3">
+                    <input type="password" name="password"
+                           class="form-control"
+                           id="password"
+                           placeholder="Password" required>
+                    <label>Password</label>
+                    <div class="strength-bar bg-secondary" id="strengthBar"></div>
+                </div>
+
+                <!-- Phone -->
+                <div class="form-floating mb-3">
+                    <input type="tel"
+                           name="phone"
+                           class="form-control"
+                           id="phone"
+                           placeholder="Phone"
+                           pattern="[6-9]{1}[0-9]{9}"
+                           maxlength="10"
+                           required>
+                    <label>Phone (10-digit Indian mobile)</label>
+                    <div class="invalid-feedback">
+                        Enter valid 10-digit number starting with 6-9.
+                    </div>
+                </div>
+
+                <!-- Address -->
+                <div class="form-floating mb-3">
+                    <textarea name="address"
+                              class="form-control"
+                              placeholder="Address"
+                              style="height:100px;"></textarea>
+                    <label>Address</label>
+                </div>
+
+                <!-- Photo -->
+                <div class="mb-3 text-center">
+                    <img id="preview" class="avatar-preview">
+                    <input type="file" name="photo"
+                           class="form-control"
+                           id="photoInput"
+                           accept="image/*">
+                </div>
+
+                <button type="submit" class="btn btn-medical w-100">
+                    <i class="bi bi-person-plus-fill"></i> Register
+                </button>
+
+            </form>
+
+            <div class="text-center mt-4">
+                <a href="{% url 'home' %}" class="text-primary text-decoration-none">
+                    ← Back to Home
+                </a>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<script>
+    const phoneInput = document.getElementById('phone');
+    const form = document.getElementById('registerForm');
+    const passwordInput = document.getElementById('password');
+    const strengthBar = document.getElementById('strengthBar');
+
+    // Phone Validation (exactly 10 digits only)
+    phoneInput.addEventListener('input', function () {
+        const phonePattern = /^[0-9]{10}$/;
+
+        if (phonePattern.test(phoneInput.value)) {
+            phoneInput.classList.remove('is-invalid');
+            phoneInput.classList.add('is-valid');
+        } else {
+            phoneInput.classList.remove('is-valid');
+            phoneInput.classList.add('is-invalid');
+        }
+    });
+
+    // Password Validation (minimum 5 characters)
+    passwordInput.addEventListener('input', function () {
+        if (passwordInput.value.length >= 5) {
+            passwordInput.classList.remove('is-invalid');
+            passwordInput.classList.add('is-valid');
+            strengthBar.className = "strength-bar bg-success";
+        } else {
+            passwordInput.classList.remove('is-valid');
+            passwordInput.classList.add('is-invalid');
+            strengthBar.className = "strength-bar bg-danger";
+        }
+    });
+
+    // Prevent submit if invalid
+    form.addEventListener('submit', function (event) {
+
+        const phonePattern = /^[0-9]{10}$/;
+        const isPhoneValid = phonePattern.test(phoneInput.value);
+        const isPasswordValid = passwordInput.value.length >= 5;
+
+        if (!isPhoneValid || !isPasswordValid) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+
+        form.classList.add('was-validated');
+    });
+</script>
+
+
+</body>
+</html>

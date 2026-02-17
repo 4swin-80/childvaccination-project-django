@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Hospital Registration</title>
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <style>
+        body {
+            background: linear-gradient(135deg, #f3f9f6, #eef4ff);
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .register-card {
+            background: white;
+            border-radius: 25px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.08);
+            padding: 40px;
+            animation: fadeInUp 0.8s ease forwards;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity:0; transform: translateY(30px); }
+            to { opacity:1; transform: translateY(0); }
+        }
+
+        .form-control {
+            border-radius: 12px;
+            padding: 12px;
+            transition: 0.3s;
+        }
+
+        .form-control:focus {
+            border-color: #16a34a;
+            box-shadow: 0 0 10px rgba(22,163,74,0.4);
+        }
+
+        .btn-hospital {
+            background: linear-gradient(45deg, #14532d, #1e3a8a);
+            border: none;
+            color: white;
+            padding: 12px;
+            border-radius: 12px;
+            transition: 0.3s;
+        }
+
+        .btn-hospital:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+
+        .strength-bar {
+           display: none;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div class="container d-flex justify-content-center align-items-center"
+     style="min-height: 100vh;">
+
+    <div class="col-md-6">
+
+        <div class="register-card">
+
+            <h3 class="text-center fw-bold text-success mb-3">
+                🏥 Hospital Registration
+            </h3>
+
+            <!-- Approval Notice -->
+            <div class="alert alert-warning text-center">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+                Login will be enabled only after <strong>Admin Approval</strong>.
+            </div>
+
+            <form method="post" id="hospitalForm" novalidate>
+                {% csrf_token %}
+
+                <!-- Username -->
+                <div class="form-floating mb-3">
+                    <input type="text"
+                           name="username"
+                           class="form-control"
+                           placeholder="Username"
+                           required>
+                    <label>Hospital Username</label>
+                </div>
+
+               
+                <!-- Password -->
+<div class="form-floating mb-3">
+    <input type="password"
+           name="password"
+           class="form-control"
+           id="password"
+           placeholder="Password"
+           required>
+    <label>Password (Minimum 6 characters)</label>
+    <div class="invalid-feedback">
+        Password must be more than 5 characters.
+    </div>
+</div>
+
+
+                <!-- Phone -->
+                <div class="form-floating mb-3">
+                    <input type="tel"
+                           name="phone"
+                           class="form-control"
+                           id="phone"
+                           placeholder="Phone"
+                           pattern="[6-9]{1}[0-9]{9}"
+                           maxlength="10"
+                           required>
+                    <label>Phone (10-digit)</label>
+                    <div class="invalid-feedback">
+                        Enter valid 10-digit number starting with 6-9.
+                    </div>
+                </div>
+
+                <!-- Address -->
+                <div class="form-floating mb-4">
+                    <textarea name="address"
+                              class="form-control"
+                              placeholder="Address"
+                              style="height: 100px;"></textarea>
+                    <label>Hospital Address</label>
+                </div>
+
+                <button type="submit" class="btn btn-hospital w-100">
+                    <i class="bi bi-building-add"></i> Register Hospital
+                </button>
+
+            </form>
+
+            <div class="text-center mt-4">
+                <a href="{% url 'home' %}" class="text-success text-decoration-none">
+                    ← Back to Home
+                </a>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<script>
+    const form = document.getElementById('hospitalForm');
+    const phoneInput = document.getElementById('phone');
+    const passwordInput = document.getElementById('password');
+
+    // Phone validation (exactly 10 digits)
+    phoneInput.addEventListener('input', function() {
+        const phonePattern = /^[0-9]{10}$/;
+
+        if (phonePattern.test(phoneInput.value)) {
+            phoneInput.classList.add('is-valid');
+            phoneInput.classList.remove('is-invalid');
+        } else {
+            phoneInput.classList.add('is-invalid');
+            phoneInput.classList.remove('is-valid');
+        }
+    });
+
+    // Password validation (length > 5)
+    passwordInput.addEventListener('input', function() {
+        if (passwordInput.value.length > 5) {
+            passwordInput.classList.add('is-valid');
+            passwordInput.classList.remove('is-invalid');
+        } else {
+            passwordInput.classList.add('is-invalid');
+            passwordInput.classList.remove('is-valid');
+        }
+    });
+
+    // Prevent invalid form submit
+    form.addEventListener('submit', function(event) {
+
+        const phoneValid = /^[0-9]{10}$/.test(phoneInput.value);
+        const passwordValid = passwordInput.value.length > 5;
+
+        if (!phoneValid || !passwordValid) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+
+        form.classList.add('was-validated');
+    });
+</script>
+
+
+</body>
+</html>

@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Hospital Dashboard</title>
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <style>
+        body {
+            margin: 0;
+            background: linear-gradient(135deg, #f3f9f6, #eef4ff);
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        /* ===== NAVBAR ===== */
+        .navbar-hospital {
+            background: linear-gradient(90deg, #14532d, #1e3a8a);
+        }
+
+        /* ===== CARD ===== */
+        .dashboard-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.08);
+            padding: 30px;
+            animation: fadeInUp 0.8s ease forwards;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity:0; transform: translateY(30px); }
+            to { opacity:1; transform: translateY(0); }
+        }
+
+        /* ===== TABLE ===== */
+        .table thead {
+            background: linear-gradient(45deg, #14532d, #1e3a8a);
+            color: white;
+        }
+
+        .table tbody tr {
+            transition: 0.3s;
+        }
+
+        .table tbody tr:hover {
+            background: #f0fdf4;
+            transform: scale(1.01);
+        }
+
+        /* ===== STATUS BADGES ===== */
+        .badge-status {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+        }
+
+        .badge-pending {
+            background: linear-gradient(45deg, #f59e0b, #fbbf24);
+        }
+
+        .badge-approved {
+            background: linear-gradient(45deg, #2563eb, #3b82f6);
+        }
+
+        .badge-completed {
+            background: linear-gradient(45deg, #16a34a, #22c55e);
+        }
+
+        .badge-rejected {
+            background: linear-gradient(45deg, #dc2626, #ef4444);
+        }
+
+        .btn-hospital {
+            background: linear-gradient(45deg, #14532d, #1e3a8a);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 8px 15px;
+            transition: 0.3s;
+        }
+
+        .btn-hospital:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+
+    </style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg navbar-dark navbar-hospital shadow">
+    <div class="container-fluid">
+        <span class="navbar-brand fw-bold">
+            🏥 Hospital Dashboard
+        </span>
+
+        <div>
+            <a href="{% url 'add_vaccine' %}" class="btn btn-outline-light me-2">
+                <i class="bi bi-capsule"></i> Add Vaccine
+            </a>
+            <a href="{% url 'logout' %}" class="btn btn-danger">
+                <i class="bi bi-power"></i> Logout
+            </a>
+        </div>
+    </div>
+</nav>
+
+<div class="container my-5">
+
+    <h3 class="fw-bold text-success mb-4">
+        Welcome, {{ request.user.username }}
+    </h3>
+
+    <!-- Latest Appointments -->
+    <div class="dashboard-card mb-5">
+
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4 class="fw-bold text-dark">
+                📅 Latest 10 Appointments
+            </h4>
+            <a href="{% url 'hospital_appointments' %}" class="btn btn-hospital">
+                View All
+            </a>
+        </div>
+
+        {% if appointments %}
+        <div class="table-responsive">
+            <table class="table align-middle text-center">
+
+                <thead>
+                    <tr>
+                        <th>Child</th>
+                        <th>Vaccine</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for a in appointments %}
+                    <tr>
+                        <td class="fw-semibold">{{ a.child.name }}</td>
+                        <td>{{ a.vaccine.name }}</td>
+                        <td>{{ a.appointment_date }}</td>
+
+                        <td>
+                            {% if a.status == "PENDING" %}
+                                <span class="badge badge-status badge-pending">PENDING</span>
+                            {% elif a.status == "APPROVED" %}
+                                <span class="badge badge-status badge-approved">APPROVED</span>
+                            {% elif a.status == "COMPLETED" %}
+                                <span class="badge badge-status badge-completed">COMPLETED</span>
+                            {% elif a.status == "REJECTED" %}
+                                <span class="badge badge-status badge-rejected">REJECTED</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+
+            </table>
+        </div>
+        {% else %}
+            <div class="alert alert-info">
+                No appointments yet.
+            </div>
+        {% endif %}
+    </div>
+
+
+    <!-- Patient Records -->
+    <div class="dashboard-card">
+
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4 class="fw-bold text-dark">
+                📂 Patient Records (Completed Only)
+            </h4>
+            <a href="{% url 'all_patient_records' %}" class="btn btn-hospital">
+                View All
+            </a>
+        </div>
+
+        {% if completed_records %}
+        <div class="table-responsive">
+            <table class="table align-middle text-center">
+
+                <thead>
+                    <tr>
+                        <th>Child</th>
+                        <th>Parent</th>
+                        <th>Phone</th>
+                        <th>Vaccine</th>
+                        <th>Completed Date</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for record in completed_records %}
+                    <tr>
+                        <td class="fw-semibold">{{ record.child.name }}</td>
+                        <td>{{ record.child.parent.username }}</td>
+                        <td>{{ record.child.parent.phone }}</td>
+                        <td>{{ record.vaccine.name }}</td>
+                        <td>{{ record.appointment_date }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+
+            </table>
+        </div>
+        {% else %}
+            <div class="alert alert-warning">
+                No completed records yet.
+            </div>
+        {% endif %}
+    </div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add Vaccine</title>
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <style>
+        body {
+            background: linear-gradient(135deg, #f3f9f6, #eef4ff);
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        /* Navbar */
+        .navbar-hospital {
+            background: linear-gradient(90deg, #14532d, #1e3a8a);
+        }
+
+        /* Card */
+        .vaccine-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.08);
+            padding: 40px;
+            animation: fadeInUp 0.8s ease forwards;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Inputs */
+        .form-control {
+            border-radius: 12px;
+            padding: 12px;
+            transition: 0.3s;
+        }
+
+        .form-control:focus {
+            border-color: #16a34a;
+            box-shadow: 0 0 10px rgba(22,163,74,0.4);
+        }
+
+        textarea.form-control {
+            resize: none;
+        }
+
+        /* Button */
+        .btn-hospital {
+            background: linear-gradient(45deg, #14532d, #1e3a8a);
+            border: none;
+            color: white;
+            padding: 12px;
+            border-radius: 12px;
+            transition: 0.3s;
+        }
+
+        .btn-hospital:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+
+        .back-link {
+            text-decoration: none;
+            color: #14532d;
+            font-weight: 500;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg navbar-dark navbar-hospital shadow-sm">
+    <div class="container-fluid">
+        <span class="navbar-brand fw-bold">
+            💉 Add New Vaccine
+        </span>
+
+        <a href="{% url 'hospital_dashboard' %}" class="btn btn-outline-light">
+            <i class="bi bi-speedometer2"></i> Dashboard
+        </a>
+    </div>
+</nav>
+
+
+<div class="container d-flex justify-content-center align-items-center"
+     style="min-height: 85vh;">
+
+    <div class="col-md-6">
+
+        <div class="vaccine-card">
+
+            <h4 class="text-center fw-bold text-success mb-4">
+                🧬 Vaccine Registration Form
+            </h4>
+
+            <form method="POST" id="vaccineForm" novalidate>
+                {% csrf_token %}
+
+                <!-- Vaccine Name -->
+                <div class="form-floating mb-3">
+                    <input type="text"
+                           name="name"
+                           class="form-control"
+                           placeholder="Vaccine Name"
+                           required>
+                    <label>Vaccine Name</label>
+                    <div class="invalid-feedback">
+                        Please enter vaccine name.
+                    </div>
+                </div>
+
+                <!-- Description -->
+                <div class="form-floating mb-3">
+                    <textarea name="description"
+                              class="form-control"
+                              placeholder="Description"
+                              style="height: 120px;"
+                              required></textarea>
+                    <label>Description</label>
+                    <div class="invalid-feedback">
+                        Please enter description.
+                    </div>
+                </div>
+
+                <!-- Recommended Age -->
+                <div class="form-floating mb-4">
+                    <input type="text"
+                           name="recommended_age"
+                           class="form-control"
+                           placeholder="Recommended Age"
+                           required>
+                    <label>Recommended Age (Example: 6 months)</label>
+                    <div class="invalid-feedback">
+                        Please enter recommended age.
+                    </div>
+                </div>
+
+                <!-- Submit -->
+                <button type="submit" class="btn btn-hospital w-100">
+                    <i class="bi bi-plus-circle"></i> Add Vaccine
+                </button>
+
+            </form>
+
+            <div class="text-center mt-4">
+                <a href="{% url 'hospital_dashboard' %}" class="back-link">
+                    ← Back to Dashboard
+                </a>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<!-- Validation Script -->
+<script>
+    const form = document.getElementById('vaccineForm');
+
+    form.addEventListener('submit', function(event) {
+        if (!form.checkValidity()) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+        form.classList.add('was-validated');
+    });
+</script>
+
+</body>
+</html>
