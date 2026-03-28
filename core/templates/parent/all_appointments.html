@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>All Vaccination Appointments</title>
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <style>
+        body {
+            background: linear-gradient(135deg, #eaf4f8, #f6fbff);
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        /* Navbar */
+        .navbar-custom {
+            background: linear-gradient(90deg,rgba(0, 9, 102, 0.9),rgba(0, 82, 102, 0.9));
+            backdrop-filter: blur(8px);
+        }
+
+        /* Premium Card */
+        .premium-card {
+            background: white;
+            border-radius: 25px;
+            box-shadow: 0 15px 40px rgba(0, 119, 182, 0.15);
+            padding: 35px;
+            animation: fadeInUp 0.8s ease forwards;
+        }
+
+        /* Fade animation */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Table styling */
+        .table thead {
+            background: linear-gradient(45deg, #0077b6, #00b4d8);
+            color: white;
+        }
+
+        .table tbody tr {
+            transition: 0.3s;
+        }
+
+        .table tbody tr:hover {
+            background-color: #f1fbff;
+            transform: scale(1.01);
+        }
+
+        /* Status Badges */
+        .badge-status {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-pending {
+            background: linear-gradient(45deg, #ff9e00, #ffbe0b);
+            color: black;
+        }
+
+        .badge-approved {
+            background: linear-gradient(45deg, #0077b6, #00b4d8);
+        }
+
+        .badge-completed {
+            background: linear-gradient(45deg, #38b000, #70e000);
+        }
+
+        .badge-rejected {
+            background: linear-gradient(45deg, #d00000, #e63946);
+        }
+
+        .btn-back {
+            transition: 0.3s;
+        }
+
+        .btn-back:hover {
+            transform: translateX(-5px);
+        }
+
+    </style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg navbar-dark navbar-custom shadow-sm">
+    <div class="container-fluid">
+        <span class="navbar-brand fw-bold">
+            💉 Vaccination Appointments
+        </span>
+
+        <a href="{% url 'parent_dashboard' %}" class="btn btn-outline-light">
+            <i class="bi bi-speedometer2"></i> Dashboard
+        </a>
+    </div>
+</nav>
+
+
+<div class="container my-5">
+
+    <div class="premium-card">
+
+        <h3 class="fw-bold text-primary mb-4">
+            📋 All Vaccination Appointments
+        </h3>
+
+        {% if appointments %}
+        <div class="table-responsive">
+            <table class="table align-middle text-center">
+
+                <thead>
+                    <tr>
+                        <th>Child</th>
+                        <th>Hospital</th>
+                        <th>Vaccine</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                        <th>Hospital Notes</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for a in appointments %}
+                    <tr>
+                        <td class="fw-semibold">{{ a.child.name }}</td>
+                        <td>{{ a.hospital.user.username }}</td>
+                        <td>{{ a.vaccine.name }}</td>
+                        <td>{{ a.appointment_date }}</td>
+
+                        <!-- Status -->
+                        <td>
+                            {% if a.status == "PENDING" %}
+                                <span class="badge badge-status badge-pending">
+                                    PENDING
+                                </span>
+                            {% elif a.status == "APPROVED" %}
+                                <span class="badge badge-status badge-approved">
+                                    APPROVED
+                                </span>
+                            {% elif a.status == "COMPLETED" %}
+                                <span class="badge badge-status badge-completed">
+                                    COMPLETED
+                                </span>
+                            {% elif a.status == "REJECTED" %}
+                                <span class="badge badge-status badge-rejected">
+                                    REJECTED
+                                </span>
+                            {% endif %}
+                        </td>
+
+                        <!-- Notes -->
+                        <td>
+                            {% if a.result_notes %}
+                                <span class="text-muted">
+                                    {{ a.result_notes }}
+                                </span>
+                            {% else %}
+                                <span class="text-secondary fst-italic">
+                                    No notes added
+                                </span>
+                            {% endif %}
+                        </td>
+
+                    </tr>
+                    {% endfor %}
+                </tbody>
+
+            </table>
+        </div>
+        {% else %}
+            <div class="alert alert-info">
+                No appointments found.
+            </div>
+        {% endif %}
+
+        <div class="mt-4">
+            <a href="{% url 'parent_dashboard' %}" class="btn btn-outline-primary btn-back">
+                <i class="bi bi-arrow-left"></i> Back to Dashboard
+            </a>
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>

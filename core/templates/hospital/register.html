@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Hospital Registration</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background: linear-gradient(135deg, #f3f9f6, #eef4ff); font-family: 'Segoe UI', sans-serif; }
+        .register-card { background: white; border-radius: 25px; box-shadow: 0 15px 40px rgba(0,0,0,0.08); padding: 40px; }
+    </style>
+</head>
+<body>
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 100vh;">
+    <div class="col-md-6">
+        <div class="register-card">
+            <h3 class="text-center fw-bold text-success mb-3">Hospital Registration</h3>
+            <div class="alert alert-warning text-center">Login will be enabled only after <strong>Admin Approval</strong>.</div>
+            <form method="post">
+                {% csrf_token %}
+                <div class="mb-3"><input type="text" name="username" class="form-control" placeholder="Hospital Username" required></div>
+                <div class="mb-3"><input type="password" name="password" class="form-control" placeholder="Password" required></div>
+                <div class="mb-3"><input type="tel" name="phone" class="form-control" placeholder="Phone" required></div>
+                <div class="mb-3"><textarea name="address" class="form-control" placeholder="Hospital Address" style="height:100px;"></textarea></div>
+                <button type="submit" class="btn btn-success w-100">Register Hospital</button>
+            </form>
+            <div class="text-center mt-4"><a href="{% url 'home' %}" class="text-success text-decoration-none">Back to Home</a></div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

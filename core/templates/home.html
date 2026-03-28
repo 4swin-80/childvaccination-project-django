@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>e-ChildVaccine</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            font-family: 'Segoe UI', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(-45deg, rgb(0, 0, 0), rgb(8, 22, 91), rgb(7, 78, 6), rgb(0, 0, 0));
+            background-size: 400% 400%;
+            animation: gradientMove 12s ease infinite;
+        }
+        @keyframes gradientMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .home-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            padding: 50px;
+            width: 420px;
+            text-align: center;
+            color: white;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.25);
+        }
+        .btn-portal {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border-radius: 12px;
+            border: none;
+            font-weight: 600;
+        }
+        .btn-login { background: #fff; color: #000; }
+        .btn-parent { background: linear-gradient(45deg, rgb(50, 0, 199), rgb(0, 0, 0)); color: white; }
+        .btn-hospital { background: linear-gradient(45deg, rgb(14, 133, 21), rgb(0, 0, 0)); color: white; }
+        .tagline { font-size: 14px; opacity: 0.9; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="home-card">
+        <h1 class="mb-4">E-ChildVac</h1>
+        <a href="{% url 'login' %}" class="btn btn-portal btn-login">Login</a>
+        <a href="{% url 'parent_register' %}" class="btn btn-portal btn-parent">Register as Parent</a>
+        <a href="{% url 'hospital_register' %}" class="btn btn-portal btn-hospital">Register as Hospital</a>
+        <div class="tagline">Smart • Secure • Digital Vaccination Management</div>
+    </div>
+</body>
+</html>

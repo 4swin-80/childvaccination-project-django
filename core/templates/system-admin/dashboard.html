@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Dashboard</title>
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <style>
+        body {
+            margin: 0;
+            background: linear-gradient(135deg, #f5f3ff, #eef2ff);
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        /* Navbar */
+        .navbar-admin {
+            background: linear-gradient(90deg, #4c1d95, #312e81);
+        }
+
+        /* Section Cards */
+        .admin-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.08);
+            margin-bottom: 40px;
+            animation: fadeInUp 0.8s ease forwards;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(25px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Tables */
+        .table thead {
+            background: linear-gradient(45deg, #4c1d95, #312e81);
+            color: white;
+        }
+
+        .table tbody tr {
+            transition: 0.3s;
+        }
+
+        .table tbody tr:hover {
+            background-color: #f3f4f6;
+            transform: scale(1.01);
+        }
+
+        /* Status Badges */
+        .badge-approved {
+            background: linear-gradient(45deg, #16a34a, #22c55e);
+        }
+
+        .badge-disapproved {
+            background: linear-gradient(45deg, #dc2626, #ef4444);
+        }
+
+        /* Parent Card Grid */
+        .parent-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .parent-card {
+            background: #fafafa;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+            transition: 0.3s;
+        }
+
+        .parent-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .child-box {
+            background: white;
+            padding: 8px;
+            margin-top: 8px;
+            border-radius: 8px;
+            font-size: 14px;
+            border-left: 4px solid #4c1d95;
+        }
+
+        .btn-admin {
+            background: linear-gradient(45deg, #4c1d95, #312e81);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 6px 14px;
+        }
+
+        .btn-admin:hover {
+            transform: translateY(-2px);
+        }
+        /* Status Badges */
+.badge-status {
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    color: white;
+}
+
+.status-pending {
+    background: linear-gradient(45deg, #f59e0b, #fbbf24);
+}
+
+.status-approved {
+    background: linear-gradient(45deg, #2563eb, #3b82f6);
+}
+
+.status-completed {
+    background: linear-gradient(45deg, #16a34a, #22c55e);
+}
+
+.status-rejected {
+    background: linear-gradient(45deg, #dc2626, #ef4444);
+}
+    </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg navbar-dark navbar-admin shadow">
+    <div class="container-fluid">
+        <span class="navbar-brand fw-bold">
+            👑 Admin Control Panel
+        </span>
+        <a href="{% url 'logout' %}" class="btn btn-outline-light">
+            <i class="bi bi-power"></i> Logout
+        </a>
+    </div>
+</nav>
+
+<div class="container my-5">
+
+    <h3 class="fw-bold text-primary mb-4">
+        Welcome, {{ request.user.username }}
+    </h3>
+
+    <!-- Hospital Approval Section -->
+    <div class="admin-card">
+
+        <h4 class="fw-bold mb-3">🏥 Hospital Approval</h4>
+
+        <div class="table-responsive">
+            <table class="table align-middle text-center">
+
+                <thead>
+                    <tr>
+                        <th>Hospital</th>
+                        <th>Phone</th>
+                        <th>Address</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for hospital in hospitals %}
+                    <tr>
+                        <td>{{ hospital.user.username }}</td>
+                        <td>{{ hospital.user.phone }}</td>
+                        <td>{{ hospital.user.address }}</td>
+
+                        <td>
+                            {% if hospital.approved %}
+                                <span class="badge badge-approved">Approved</span>
+                            {% else %}
+                                <span class="badge badge-disapproved">Disapproved</span>
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            <a href="{% url 'toggle_hospital' hospital.id %}"
+                               class="btn btn-admin">
+                                {% if hospital.approved %}
+                                    Disapprove
+                                {% else %}
+                                    Approve
+                                {% endif %}
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+
+            </table>
+        </div>
+
+    </div>
+
+
+    <!-- Parents & Children Section -->
+    <div class="admin-card">
+
+        <h4 class="fw-bold mb-4">👨‍👩‍👧 Parents & Their Children</h4>
+
+        <div class="parent-container">
+
+        {% for parent in parents %}
+            <div class="parent-card">
+                <h5>👤 {{ parent.username }}</h5>
+                <p><strong>Phone:</strong> {{ parent.phone }}</p>
+                <p><strong>Address:</strong> {{ parent.address }}</p>
+
+                <div class="d-flex gap-2 mt-2">
+
+                    <!-- Edit Button -->
+                    <a href="{% url 'edit_parent_admin' parent.id %}"
+                       class="btn btn-sm btn-outline-success">
+                        <i class="bi bi-pencil-square"></i> Edit
+                    </a>
+                
+                    <!-- Delete Button -->
+                    <a href="{% url 'delete_parent_admin' parent.id %}"
+                       class="btn btn-sm btn-outline-danger"
+                       onclick="return confirm('Are you sure you want to delete this parent?');">
+                        <i class="bi bi-trash"></i> Delete
+                    </a>
+                
+                </div>
+                
+
+                <hr>
+                <strong>Children:</strong>
+
+                {% if parent.child_set.all %}
+                    {% for child in parent.child_set.all %}
+                        <div class="child-box">
+                            👶 {{ child.name }} <br>
+                            🎂 {{ child.dob }} <br>
+                            🩸 {{ child.blood_group }}
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-danger">No children added</p>
+                {% endif %}
+            </div>
+        {% endfor %}
+
+        </div>
+
+    </div>
+
+
+    <!-- Appointments Section -->
+    <div class="admin-card">
+
+        <h4 class="fw-bold mb-3">📅 All Appointments</h4>
+
+        <div class="table-responsive">
+            <table class="table align-middle text-center">
+
+                <thead>
+                    <tr>
+                        <th>Child</th>
+                        <th>Parent</th>
+                        <th>Hospital</th>
+                        <th>Vaccine</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% if appointments %}
+                        {% for a in appointments %}
+                        <tr>
+                            <td>{{ a.child.name }}</td>
+                            <td>{{ a.child.parent.username }}</td>
+                            <td>{{ a.hospital.user.username }}</td>
+                            <td>{{ a.vaccine.name }}</td>
+                            <td>{{ a.appointment_date }}</td>
+                            <td>
+                                {% if a.status == "PENDING" %}
+                                    <span class="badge badge-status status-pending">
+                                        PENDING
+                                    </span>
+                                {% elif a.status == "APPROVED" %}
+                                    <span class="badge badge-status status-approved">
+                                        APPROVED
+                                    </span>
+                                {% elif a.status == "COMPLETED" %}
+                                    <span class="badge badge-status status-completed">
+                                        COMPLETED
+                                    </span>
+                                {% elif a.status == "REJECTED" %}
+                                    <span class="badge badge-status status-rejected">
+                                        REJECTED
+                                    </span>
+                                {% else %}
+                                    <span class="badge bg-secondary">
+                                        {{ a.status }}
+                                    </span>
+                                {% endif %}
+                            </td>
+                            
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="6" class="text-danger">
+                                No Appointments Found
+                            </td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+
+            </table>
+        </div>
+
+        <div class="mt-3">
+            <a href="{% url 'admin_appointments' %}"
+               class="btn btn-admin">
+               View All Appointments →
+            </a>
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>

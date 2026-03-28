@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Appointments</title>
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <style>
+        body {
+            margin: 0;
+            background: linear-gradient(135deg, #f3f9f6, #eef4ff);
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        /* Navbar */
+        .navbar-hospital {
+            background: linear-gradient(90deg, #14532d, #1e3a8a);
+        }
+
+        /* Grid */
+        .appointment-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 25px;
+        }
+
+        /* Card */
+        .appointment-card {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.08);
+            transition: 0.3s;
+            animation: fadeInUp 0.7s ease forwards;
+        }
+
+        .appointment-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.12);
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(25px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Status Badges */
+        .badge-status {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+        }
+
+        .badge-pending {
+            background: linear-gradient(45deg, #f59e0b, #fbbf24);
+        }
+
+        .badge-approved {
+            background: linear-gradient(45deg, #2563eb, #3b82f6);
+        }
+
+        .badge-completed {
+            background: linear-gradient(45deg, #16a34a, #22c55e);
+        }
+
+        .badge-rejected {
+            background: linear-gradient(45deg, #dc2626, #ef4444);
+        }
+
+        /* Form */
+        .form-select, .form-control {
+            border-radius: 10px;
+            margin-top: 5px;
+            transition: 0.3s;
+        }
+
+        .form-select:focus, .form-control:focus {
+            border-color: #16a34a;
+            box-shadow: 0 0 10px rgba(22,163,74,0.4);
+        }
+
+        /* Buttons */
+        .btn-update {
+            background: linear-gradient(45deg, #14532d, #1e3a8a);
+            border: none;
+            color: white;
+            border-radius: 8px;
+        }
+
+        .btn-update:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-delete {
+            background: linear-gradient(45deg, #b91c1c, #ef4444);
+            border: none;
+            color: white;
+            border-radius: 8px;
+        }
+
+        .btn-delete:hover {
+            transform: translateY(-2px);
+        }
+
+        .back-btn {
+            background: linear-gradient(45deg, #14532d, #1e3a8a);
+            border: none;
+            color: white;
+            border-radius: 10px;
+            padding: 8px 16px;
+        }
+
+        .back-btn:hover {
+            transform: translateX(-5px);
+        }
+
+    </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg navbar-dark navbar-hospital shadow-sm">
+    <div class="container-fluid">
+        <span class="navbar-brand fw-bold">
+            📅 Appointment Management
+        </span>
+
+        <a href="{% url 'hospital_dashboard' %}" class="btn btn-outline-light">
+            <i class="bi bi-speedometer2"></i> Dashboard
+        </a>
+    </div>
+</nav>
+
+<div class="container my-5">
+
+    <h3 class="fw-bold text-success text-center mb-4">
+        🏥 My Appointments
+    </h3>
+
+    {% if appointments %}
+    <div class="appointment-grid">
+
+        {% for a in appointments %}
+        <div class="appointment-card">
+
+            <p><strong>👶 Child:</strong> {{ a.child.name }}</p>
+            <p><strong>👨‍👩‍👧 Parent:</strong> {{ a.child.parent.username }}</p>
+            <p><strong>💉 Vaccine:</strong> {{ a.vaccine.name }}</p>
+            <p><strong>📅 Date:</strong> {{ a.appointment_date }}</p>
+
+            <p>
+                <strong>Status:</strong>
+                {% if a.status == "PENDING" %}
+                    <span class="badge badge-status badge-pending">PENDING</span>
+                {% elif a.status == "APPROVED" %}
+                    <span class="badge badge-status badge-approved">APPROVED</span>
+                {% elif a.status == "COMPLETED" %}
+                    <span class="badge badge-status badge-completed">COMPLETED</span>
+                {% elif a.status == "REJECTED" %}
+                    <span class="badge badge-status badge-rejected">REJECTED</span>
+                {% endif %}
+            </p>
+
+            <hr>
+
+            <!-- Update Form -->
+            <form method="post" action="{% url 'update_appointment' a.id %}">
+                {% csrf_token %}
+
+                <label class="fw-semibold">Update Status:</label>
+                <select name="status" class="form-select mb-2">
+                    <option value="PENDING" {% if a.status == "PENDING" %}selected{% endif %}>PENDING</option>
+                    <option value="APPROVED" {% if a.status == "APPROVED" %}selected{% endif %}>APPROVED</option>
+                    <option value="COMPLETED" {% if a.status == "COMPLETED" %}selected{% endif %}>COMPLETED</option>
+                    <option value="REJECTED" {% if a.status == "REJECTED" %}selected{% endif %}>REJECTED</option>
+                </select>
+
+                <label class="fw-semibold">Notes:</label>
+                <textarea name="notes" class="form-control mb-2">{{ a.result_notes }}</textarea>
+
+                <button type="submit" class="btn btn-update w-100">
+                    <i class="bi bi-check-circle"></i> Update
+                </button>
+            </form>
+
+            <form method="post" action="{% url 'delete_appointment' a.id %}" class="mt-2">
+                {% csrf_token %}
+                <button type="submit"
+                        class="btn btn-delete w-100"
+                        onclick="return confirm('Are you sure you want to delete this appointment?');">
+                    <i class="bi bi-trash"></i> Delete Appointment
+                </button>
+            </form>
+
+        </div>
+        {% endfor %}
+
+    </div>
+
+    {% else %}
+        <div class="alert alert-warning text-center">
+            No appointments available.
+        </div>
+    {% endif %}
+
+    <div class="text-center mt-5">
+        <a href="{% url 'hospital_dashboard' %}" class="btn back-btn">
+            ⬅ Back to Dashboard
+        </a>
+    </div>
+
+</div>
+
+</body>
+</html>
